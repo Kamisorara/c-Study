@@ -1,0 +1,3 @@
+F:\Jetbrains-tool\apps\CLion\ch-0\222.4167.35\bin\cmake\win\bin\cmake.exe -E rm -f CMakeFiles\cppLearning.dir/objects.a
+D:\cppEnvironment\mingw64\bin\ar.exe qc CMakeFiles\cppLearning.dir/objects.a @CMakeFiles\cppLearning.dir\objects1.rsp
+D:\cppEnvironment\mingw64\bin\g++.exe -g -Wl,--whole-archive CMakeFiles\cppLearning.dir/objects.a -Wl,--no-whole-archive -o cppLearning.exe -Wl,--out-implib,libcppLearning.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\cppLearning.dir\linklibs.rsp

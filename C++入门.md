@@ -392,3 +392,206 @@ int main() {
 }
 ```
 
+### 结构体数组
+
+```c++
+#include <iostream>
+
+using namespace std;
+
+//定义结构体数组
+struct Student {
+
+    //姓名
+    string name;
+    //年龄
+    int age;
+    //分数
+    int score;
+
+};
+
+int main() {
+    //创建结构体数组
+    Student stuArray[3] = {
+            {"zhangsan", 18, 100},
+            {"lisi",     28, 100},
+            {"kakka",    38, 199}};
+
+    //遍历结构体数组
+    for (int i = 0; i < 3; ++i) {
+        cout << stuArray[i].name << endl;
+        //接下来的遍历以此类推
+    }
+
+    //给结构体数组中元组赋值
+
+    return 0;
+}
+```
+
+### 结构体指针
+
+- 通过利用操作符 ->  通过结构体指针访问结构体属性
+
+```c++
+#include <iostream>
+
+using namespace std;
+
+//定义结构体数组
+struct Student {
+
+    //姓名
+    string name;
+    //年龄
+    int age;
+    //分数
+    int score;
+
+};
+
+
+int main() {
+    //创建结构体变量
+    Student student = {"Zhangsan", 18, 100};
+
+    //通过指针指向结构体变量
+    Student *p_student = &student;
+
+    //通过指针访问结构体变量
+    cout << p_student->name << endl; //指针通过箭头进行访问结构体变量
+    
+
+    return 0;
+}
+```
+
+### 结构体嵌套结构体
+
+结构体成员可以是另一个结构体
+
+```c++
+#include <iostream>
+
+using namespace std;
+
+//定义学生结构体
+struct Student {
+    //姓名
+    string name;
+    //年龄
+    int age;
+    //分数
+    int score;
+
+};
+//定义老师结构体
+struct teacher {
+    int id;
+    string name;
+    int age;
+    struct Student stu; //在上边定义了学生结构体
+};
+int main() {
+    //结构体嵌套结构体
+    //创建老师
+    teacher t;
+    t.name = "Luoxiang";
+    t.age = 40;
+    t.id = 1000;
+    t.stu.name = "Zhangsan"; //老师结构体内有学生结构体所以直接调用就可以，很像Java中的链式调用
+    t.stu.age = 100;
+    t.stu.score = 100;
+    return 0;
+}
+```
+
+### 结构体做函数参数
+
+具体代码如下
+
+```c++
+#include <iostream>
+
+using namespace std;
+
+
+//定义学生结构体
+struct Student {
+
+    //姓名
+    string name;
+    //年龄
+    int age;
+    //分数
+    int score;
+
+};
+
+//值传递
+void printStudent1(struct Student student) {
+    //值传递修改值是不会对实参造成改变的
+    student.age = 100;
+    cout << student.name << endl;
+}
+
+//地址传递
+void printStudent2(struct Student *p_student) {
+    cout << p_student->name << endl;
+    //地址传递修改值的话是会对实参造成改变的
+    p_student->age = 1000;
+}
+
+int main() {
+    //结构体做函数参数
+    Student student = {"Zhangsan", 18, 100};
+    //结构体值传递
+    printStudent1(student);
+    //结构体地址传递
+    printStudent2(&student);
+
+    return 0;
+}
+
+```
+
+### 结构体const使用场景
+
+**作用：**用const来防止误操作
+
+相对于值传递，指针的大小就占用8个字节的大小（64位系统）
+
+```c++
+//学生结构体定义
+struct student
+{
+	//成员列表
+	string name;  //姓名
+	int age;      //年龄
+	int score;    //分数
+};
+
+//const使用场景
+void printStudent(const student *stu) //加const防止函数体中的误操作
+{
+	//stu->age = 100; //操作失败，因为加了const修饰
+	cout << "姓名：" << stu->name << " 年龄：" << stu->age << " 分数：" << stu->score << endl;
+
+}
+
+int main() {
+
+	student stu = { "张三",18,100 };
+
+	printStudent(&stu);
+
+	system("pause");
+
+	return 0;
+}
+```
+
+还记得我们上面讲的一大堆的 常量和指针的关系嘛
+
+这里加的就是常量指针它的特性就是可以修改指针的指向，但是不能修改指针的所指向的值
