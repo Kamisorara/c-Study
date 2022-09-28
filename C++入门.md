@@ -595,3 +595,260 @@ int main() {
 还记得我们上面讲的一大堆的 常量和指针的关系嘛
 
 这里加的就是常量指针它的特性就是可以修改指针的指向，但是不能修改指针的所指向的值
+
+## new 操作符
+
+C++中利用new 操作符在堆区中开辟数据
+
+堆区开辟数据，由程序员手动开辟，手动释放，释放利用操作符delete (和Java简直就是一摸一样)
+
+```c++
+#include <iostream>
+
+using namespace std;
+
+//在堆区利用new 创建int
+int *func() {
+    //在堆区创建int数据
+    //返回的是一个int 类型的指针
+    int *pInt = new int(10);
+    return pInt;
+}
+
+//在堆区利用new 开辟数组
+int *func2() {
+    int *pInt = new int[10];
+    //给数组中的元素进行赋值
+    for (int i = 0; i < 10; ++i) {
+        pInt[i] = i + 100;
+    }
+    return pInt;
+}
+
+int main() {
+    //new 基本语法
+    int *pInt = func();
+    cout << pInt << endl;
+    cout << pInt << endl;
+    cout << pInt << endl;
+    //堆中开辟的数据，需要程序员自己去释放
+    delete pInt;
+    cout << "delete latter:" << pInt << endl;
+
+    //创建堆区数组
+    int *p_arr2 = func2();
+    cout << p_arr2 << endl;
+    //释放堆区数组,要使用delete[]
+    delete[] p_arr2;
+    return 0;
+}
+```
+
+## 引用
+
+给变量起别名
+
+**用法** ： 数据类型 & 别名 = 原名
+
+```c++
+#include <iostream>
+
+using namespace std;
+
+
+int main() {
+    int a = 10;
+    //创建引用
+    int &b = a;
+    cout << "a = " << a << endl;
+    //可以通过b 修改 a 的值 因为 a,b现在都指向同一块内存
+    b = 20;
+    cout << "b = " << a << endl;
+    return 0;
+}
+```
+
+```C++
+result:
+a = 10
+b = 20
+```
+
+### 引用的注意事项
+
+- 引用必须初始化
+  - 引用在初始化后不可以再改变
+
+```c++
+#include <iostream>
+
+using namespace std;
+
+
+int main() {
+    int a = 10;
+    //创建引用
+    int &b = a; //应用必须初始化
+//    int &b; (不可以这么写)
+    int c = 30;
+
+    b = c;  //等号是赋值操作不是更改引用
+    cout << b << endl;
+    return 0;
+}
+```
+
+### 引用做函数参数
+
+可以简化指针修改实参
+
+>  (其实可以把引用理解为指针常量，可以修改值，但是不能修改指向的地址)
+
+```c++
+#include <iostream>
+
+using namespace std;
+
+//实现交换函数
+//1.值传递
+void swap01(int a, int b) {
+    int temp = a;
+    a = b;
+    b = temp;
+}
+
+//地址传递
+void swap02(int *p_a, int *p_b) {
+    int temp = *p_a;
+    *p_a = *p_b;
+    *p_b = temp;
+}
+
+//引用传递
+void swap03(int &a, int &b) {
+    int temp = a;
+    a = b;
+    b = temp;
+}
+
+int main() {
+    int a = 1;
+    int b = 11;
+
+//    swap01(a, b); //值传递  发现值并没有进行变化
+//    swap02(&a, &b); //地址传递 发现值发生交换了
+//    swap03(a, b); //发现值也发生交换了
+    cout << "a = " << a << endl;
+    cout << "b = " << b << endl;
+    return 0;
+}
+```
+
+### 引用作为函数的返回值
+
+- 注意：不要返回局部变量引用
+- 用法： 函数调用作为左值
+
+不要返回局部变量引用
+
+```c++
+#include <iostream>
+
+using namespace std;
+
+//创建一个函数返回局部引用
+int & function() {
+    int a = 10; //创建一个局部变量，存放在第四区，栈区中
+    return a;
+}
+
+
+int main() {
+    int &i = function();
+    cout << i << endl;
+    return 0;
+}
+```
+
+函数调用作为左值
+
+```c++
+#include <iostream>
+
+using namespace std;
+
+
+//在函数调用时可以作为左值
+int & function() {
+    static int a = 10; //创建一个静态变量存放在全局区，这里的数据在程序结束后由系统释放
+    return a;
+
+}
+
+
+int main() {
+    int &i = function();
+    cout << i << endl;
+    function() = 1000; //在函数调用时可以作为左值
+    cout << i << endl; //发现最后变成1000了 所以在函数调用时可以作为左值
+    return 0;
+}
+```
+
+### 引用的本质
+
+>  引用的本质在C++内部实现一个指针常量
+
+当我们在使用引用时，如果被编译器识别到会自动转换转换成一个指针常量,指针常量的指向是不可改的，这也就说明了为什么引用不可以更改指向
+
+```c++
+//发现是引用，转换为 int* const ref = &a;
+void func(int& ref){
+	ref = 100; // ref是引用，转换为*ref = 100
+}
+int main(){
+	int a = 10;
+    
+    //自动转换为 int* const ref = &a; 指针常量是指针指向不可改，也说明为什么引用不可更改
+	int& ref = a; 
+	ref = 20; //内部发现ref是引用，自动帮我们转换为: *ref = 20;
+    
+	cout << "a:" << a << endl;
+	cout << "ref:" << ref << endl;
+    
+	func(a);
+	return 0;
+}
+```
+
+结论：C++推荐用引用技术，因为语法方便，引用本质是指针常量，但是所有的指针操作编译器都帮我们做了
+
+### 常量引用
+
+**作用：**常量引用主要用来修饰形参，防止误操作
+
+在函数形参列表中，可以加==const修饰形参==，防止形参改变实参
+
+```c++
+#include <iostream>
+
+using namespace std;
+
+//打印函数
+void function(const int &num) {
+    //num = 100; //在形参上加入const 就不可以修改了
+    cout << num << endl;
+}
+
+int main() {
+    //常量引用
+    //使用场景，用来修饰形参，防止误操作
+    int a = 10;
+    const int &ref = 110; //加入const 后 编译器将代码修改为 int temp =10; const int & ref = temp;
+//    ref = 20; 加入const 后ref就变成了只读，不可以修改
+    function(ref);
+
+    return 0;
+}
+```
+
